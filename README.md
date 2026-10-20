@@ -1,90 +1,203 @@
-Este repositorio es la base para el Trabajo Práctico de la materia **Desarrollo de Software (DDS)** de la carrera **Ingeniería en Sistemas de Información** de la **UTN FRBA**. Se trata de un **monorepo** que integra una aplicación frontend con Create React App y un backend con Express, facilitando el desarrollo y la gestión de ambos proyectos en un único entorno.
+# 🩺 Sweet Medical
 
-## 📦 Estructura del Proyecto
+### Medical Appointment Management Platform
 
-El monorepo está organizado de la siguiente manera:
+**A full-stack web application for managing medical appointments, professional availability, and patient notifications.**
 
+![Next.js](https://img.shields.io/badge/Next.js-black?logo=nextdotjs&logoColor=white)
+![React](https://img.shields.io/badge/React-149ECA?logo=react&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-339933?logo=nodedotjs&logoColor=white)
+![Express](https://img.shields.io/badge/Express-000000?logo=express&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?logo=mongodb&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)
+
+*Academic group project · Software Development · Universidad Tecnológica Nacional (UTN FRBA)*
+
+
+## Overview
+
+Sweet Medical is a full-stack healthcare appointment management platform designed to connect patients with medical professionals. Patients can search for available appointments, review estimated costs based on their healthcare coverage, and book appointments. Medical professionals can manage their availability and services and track upcoming appointments.
+
+The application uses a REST API, a document-oriented database, role-based authentication, and a responsive web interface.
+
+## Key features
+
+### Patients
+- Search available appointments using filters such as specialty, professional, location, and date.
+- View estimated appointment costs based on insurance plan coverage.
+- Preselect appointments in a client-side cart before booking.
+- Book, review, and cancel appointments, subject to business rules.
+- View appointment-related notifications.
+
+### Medical professionals
+- Manage availability and offered medical services.
+- View their appointment agenda and patient information.
+- Manage appointment status and receive notifications.
+
+### Platform and business logic
+- Authentication using JSON Web Tokens (JWT).
+- REST API with request validation using Zod.
+- MongoDB persistence using Mongoose.
+- Scheduled jobs for generating available appointment slots and sending reminders.
+- Atomic appointment reservation to prevent concurrent double bookings.
+- Unit, integration, and end-to-end testing.
+
+## Tech stack
+
+| Layer | Technologies |
+| --- | --- |
+| Frontend | Next.js, React, JavaScript, Ant Design, CSS |
+| Backend | Node.js, Express, JavaScript |
+| Database | MongoDB, Mongoose |
+| Authentication | JWT, bcryptjs |
+| Validation | Zod |
+| HTTP communication | Native `fetch`, centralized API client |
+| Background jobs | node-cron |
+| Testing | Jest, Cypress |
+| API documentation | Swagger |
+| Version control | Git, GitHub |
+
+## Architecture
+
+```text
+Patient / Doctor
+       │
+       ▼
+Next.js + React Frontend
+       │
+       ├── Components / Pages
+       ├── Context API (shared state)
+       ├── Services (API calls)
+       └── HTTP client (fetch + JWT)
+                    │
+                    ▼
+             Express REST API
+                    │
+       ├── Routes / Middlewares
+       ├── Controllers
+       ├── Services (business logic)
+       ├── Repositories
+       └── Mongoose Models
+                    │
+                    ▼
+                 MongoDB
+
+Scheduled jobs: appointment slot generation and reminders
 ```
-.
+
+### Example: appointment booking flow
+
+1. The patient searches for available appointments using filters.
+2. The backend returns results with estimated coverage and costs.
+3. The patient preselects an appointment; the selection is managed by React Context and stored locally in the browser.
+4. The application requests a final quote and submits the reservation.
+5. The backend checks availability and atomically updates the appointment to prevent double booking.
+6. The platform processes the corresponding appointment notifications.
+
+## Repository structure
+
+```text
+sweet-medical/
 ├── packages/
-│   ├── backend/        # Servidor Express.js
-│   └── frontend/       # Aplicación React (Create React App)
-├── package.json        # Configuración del monorepo (root)
-├── README.md           # Este archivo
-└── .env.example        # Ejemplo de configuración de variables de entorno
+│   ├── backend/
+│   │   ├── src/
+│   │   │   ├── controllers/
+│   │   │   ├── domain/
+│   │   │   ├── jobs/
+│   │   │   ├── middlewares/
+│   │   │   ├── models/
+│   │   │   ├── repositories/
+│   │   │   ├── routes/
+│   │   │   ├── services/
+│   │   │   └── tests/
+│   │   └── index.js
+│   └── frontend/
+│       ├── public/
+│       └── src/
+│           ├── app/
+│           ├── components/
+│           ├── config/
+│           ├── context/
+│           └── services/
+├── cypress/
+└── README.md
 ```
 
-## ⚙️ Paquetes
+## Getting started
 
-Este monorepo utiliza **`npm workspaces`** para gestionar los diferentes paquetes.
+### Prerequisites
 
-### Backend (`packages/backend`)
+- Node.js and a compatible package manager (the project includes pnpm lockfiles).
+- Access to a MongoDB instance.
 
-El backend está construido con Express.js y utiliza las siguientes dependencias:
-
-- **`express`**: El framework web para Node.js, utilizado para construir la API.
-- **`cors`**: Middleware para Express que habilita Cross-Origin Resource Sharing (CORS), necesario para permitir que el frontend acceda al backend desde un origen diferente.
-- **`dotenv`**: Carga variables de entorno desde un archivo `.env` en `process.env`. Es crucial para configurar el puerto del servidor y los orígenes permitidos.
-
-La idea es dar lo mínimo para levantar el servidor, y que durante el desarrollo del TP se vayan agregando las dependencias necesarias.
-
-### Frontend (`packages/frontend`)
-
-El frontend es una aplicación de React generada con Create React App.
-
-## 🚀 Inicio Rápido
-
-Seguí estos pasos para poner en marcha el proyecto:
-
-### 1\. Instalación de Dependencias
-
-Desde la raíz del monorepo, ejecutá:
+### 1. Clone the repository
 
 ```bash
-npm install
+git clone https://github.com/JoaquinMarini/sweet-medical.git
+cd sweet-medical
 ```
 
-Esto instalará todas las dependencias para la raíz y para los paquetes `frontend` y `backend`.
+### 2. Configure environment variables
 
-### 2\. Configuración de Variables de Entorno
+Create `packages/backend/.env` locally:
 
-Crea un archivo `.env` en el directorio `packages/backend`. Puedes usar el archivo `.env.example` como plantilla.
-
-```
-# packages/backend/.env
-ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+```dotenv
+MONGO_URI=<your-mongodb-connection-string>
+JWT_SECRET=<your-own-strong-secret>
 SERVER_PORT=3001
 ```
 
-- **`ALLOWED_ORIGINS`**: Define los orígenes permitidos para las solicitudes CORS. Asegurate de incluir la URL donde se ejecuta tu frontend (por defecto, `http://localhost:3000` para Create React App). Cuando se haga el despliegue en nube acá se deberá incluir la URL donde se desplegó el frontend.
-- **`SERVER_PORT`**: El puerto en el que se ejecutará el servidor backend (ej. `8000`).
+Configure the frontend API URL if needed in `packages/frontend/.env.local`:
 
-### 3\. Ejecución de la Aplicación
-
-Podés iniciar el frontend y el backend por separado o ambos a la vez:
-
-#### Ejecutar el Backend
-
-```bash
-npm run start:backend
+```dotenv
+NEXT_PUBLIC_API_URL=http://localhost:3001
 ```
 
-Para el desarrollo con reinicio automático:
+**Never commit real credentials or `.env` files to Git.**
+
+### 3. Install dependencies and run
+
+Install dependencies using the package manager and workspace setup defined by the project's `package.json` files. Start the backend and frontend in separate terminals:
 
 ```bash
-npm run dev:backend
+# Terminal 1: backend
+cd packages/backend
+npm run dev
 ```
-
-#### Ejecutar el Frontend
 
 ```bash
-npm run start:frontend
+# Terminal 2: frontend
+cd packages/frontend
+npm run dev
 ```
 
-#### Ejecutar Ambos (Desarrollo)
+> Depending on your local workspace configuration, you may need to install workspace dependencies from the repository root first.
 
-Para iniciar el backend en modo `dev` y el frontend simultáneamente, usá:
+## Testing
 
-```bash
-npm run start:dev
-```
+The project includes:
+- **Unit tests:** business logic and validation.
+- **Integration tests:** backend HTTP endpoints.
+- **End-to-end tests:** frontend appointment-search flow with Cypress.
+
+## Screenshots
+
+_Add screenshots of the landing page, appointment search, patient cart, and doctor dashboard here._
+
+<!-- Example once a screenshot exists in docs/screenshots/:
+![Appointment search](docs/screenshots/appointment-search.png)
+-->
+
+## Academic context and contribution
+
+Developed as a **team project** for the Software Development course at **UTN FRBA**. The project provided practical experience in frontend and backend integration, REST API design, persistence, validation, testing, and collaborative Git workflows.
+
+**My contributions:** physician-facing screens, reusable UI components, navigation, and frontend integration. This section should be reviewed to accurately reflect my individual work.
+
+## Project status
+
+Academic project. This personal repository contains a code snapshot without the original group repository's Git history. Deployments, external services, and sample data are not included by default.
+
+---
+
+**Sweet Medical** · Software Development Project · UTN FRBA
