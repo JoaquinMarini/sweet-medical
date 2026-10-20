@@ -13,6 +13,12 @@
 
 *Academic group project · Software Development · Universidad Tecnológica Nacional (UTN FRBA)*
 
+### 🌐 Live Demo
+
+**[Visit Sweet Medical — Live Application](https://sweet-medical-4.netlify.app/)**
+
+Explore the deployed web application directly in your browser.
+
 
 ## Overview
 
